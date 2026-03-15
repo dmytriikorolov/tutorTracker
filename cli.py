@@ -1,5 +1,6 @@
-
 from services import StudentService, LessonService, PaymentService, ReportService
+from exceptions import StudentNotFound
+
 
 class TutorCLI:
 
@@ -26,55 +27,77 @@ class TutorCLI:
         print()
 
     def run(self):
-
         print("Tutor Tracker — Math Lessons")
         print('Type "help" to see commands.')
 
         while True:
-
             cmd = input("> ").strip()
 
-            if cmd == "help":
-                self.help()
+            try:
+                if cmd == "help":
+                    self.help()
 
-            elif cmd == "students":
-                for s in self.students.list_students():
-                    print(f'{s["id"]}: {s["name"]} ({s["price_per_lesson"]})')
+                elif cmd == "students":
+                    for s in self.students.list_students():
+                        print(
+                            f'{s["id"]}: {s["name"]} '
+                            f'({s["price_per_lesson"]} {s["currency"]})'
+                        )
 
-            elif cmd == "add_student":
-                name = input("Name: ")
-                price = input("Price per lesson: ")
-                notes = input("Notes: ")
-                self.students.add_student(name, price, notes)
-                print("Student added")
+                elif cmd == "add_student":
+                    name = input("Name: ")
+                    price = input("Price per lesson: ")
+                    currency = input("Currency (e.g. UAH, CZK, EUR, USD): ").strip().upper()
+                    notes = input("Notes: ")
 
-            elif cmd == "add_lesson":
-                sid = int(input("Student id: "))
-                duration = int(input("Duration (minutes): "))
-                comment = input("Comment: ")
-                self.lessons.add_lesson(sid, duration, comment)
-                print("Lesson added")
+                    self.students.add_student(name, price, currency, notes)
+                    print("Student added")
 
-            elif cmd == "lessons":
-                sid = int(input("Student id: "))
-                lessons = self.lessons.get_lessons(sid)
-                for l in lessons:
-                    print(l)
+                elif cmd == "add_lesson":
+                    sid = int(input("Student id: "))
+                    duration = int(input("Duration (minutes): "))
+                    comment = input("Comment: ")
 
-            elif cmd == "add_payment":
-                sid = int(input("Student id: "))
-                amount = float(input("Amount: "))
-                comment = input("Comment: ")
-                self.payments.add_payment(sid, amount, comment)
-                print("Payment added")
+                    self.lessons.add_lesson(sid, duration, comment)
+                    print("Lesson added")
 
-            elif cmd == "balance":
-                sid = int(input("Student id: "))
-                balance = self.reports.get_balance(sid)
-                print("Balance:", balance)
+                elif cmd == "lessons":
+                    sid = int(input("Student id: "))
+                    lessons = self.lessons.get_lessons(sid)
 
-            elif cmd == "exit":
-                break
+                    for l in lessons:
+                        print(
+                            f'Lesson #{l["id"]}: {l["date"]}, {l["duration"]} min, '
+                            f'{l["price_snapshot"]} {l["currency_snapshot"]}, '
+                            f'comment="{l["comment"]}"'
+                        )
 
-            else:
-                print("Unknown command. Type help.")
+                elif cmd == "add_payment":
+                    sid = int(input("Student id: "))
+                    amount = float(input("Amount: "))
+                    comment = input("Comment: ")
+
+                    self.payments.add_payment(sid, amount, comment)
+                    print("Payment added")
+
+                elif cmd == "balance":
+                    sid = int(input("Student id: "))
+                    report = self.reports.get_balance(sid)
+
+                    print(f'Student: {report["student_name"]}')
+                    print(f'Lessons total: {report["lessons_sum"]} {report["currency"]}')
+                    print(f'Payments total: {report["payments_sum"]} {report["currency"]}')
+                    print(f'Balance: {report["balance"]} {report["currency"]}')
+
+                elif cmd == "exit":
+                    break
+
+                else:
+                    print("Unknown command. Type help.")
+
+            except StudentNotFound as e:
+                print(e)
+            except ValueError:
+                print("Invalid numeric input.")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
