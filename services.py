@@ -1,8 +1,7 @@
 from models import Student, Lesson, Payment
 from storage import load_data, save_data
 from exceptions import StudentNotFound
-from datetime import date
-
+from datetime import date, datetime
 
 class StudentService:
 
@@ -34,7 +33,7 @@ class StudentService:
 
 class LessonService:
 
-    def add_lesson(self, student_id, duration, comment=""):
+    def add_lesson(self, student_id, duration, comment="", lesson_date=""):
         data = load_data()
 
         student = next((s for s in data["students"] if s["id"] == student_id), None)
@@ -42,11 +41,12 @@ class LessonService:
             raise StudentNotFound(f"Student with id {student_id} not found.")
 
         new_id = len(data["lessons"]) + 1
+        actual_date = self.validate_date(lesson_date)
 
         lesson = Lesson(
             id=new_id,
             student_id=student_id,
-            date=str(date.today()),
+            date=actual_date,
             duration=duration,
             comment=comment,
             price_snapshot=student["price_per_lesson"],
@@ -59,6 +59,17 @@ class LessonService:
     def get_lessons(self, student_id):
         data = load_data()
         return [l for l in data["lessons"] if l["student_id"] == student_id]
+
+    @staticmethod
+    def validate_date(date_str: str) -> str:
+        if not date_str:
+            return str(date.today())
+
+        try:
+            datetime.strptime(date_str, "%Y-%m-%d")
+            return date_str
+        except ValueError:
+            raise ValueError("Date must be in YYYY-MM-DD format.")
 
 
 class PaymentService:

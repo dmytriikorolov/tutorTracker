@@ -55,10 +55,11 @@ class TutorCLI:
 
                 elif cmd == "add_lesson":
                     sid = int(input("Student id: "))
+                    lesson_date = input("Date (YYYY-MM-DD, leave empty for today): ").strip()
                     duration = int(input("Duration (minutes): "))
                     comment = input("Comment: ")
 
-                    self.lessons.add_lesson(sid, duration, comment)
+                    self.lessons.add_lesson(sid, duration, comment, lesson_date)
                     print("Lesson added")
 
                 elif cmd == "lessons":
