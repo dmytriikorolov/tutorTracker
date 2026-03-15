@@ -8,6 +8,7 @@ CMD_ADD_STUDENT = "add_student"
 CMD_ADD_LESSON = "add_lesson"
 CMD_LESSONS = "lessons"
 CMD_ADD_PAYMENT = "add_payment"
+CMD_STUDENT_SUMMARY = "student_summary"
 CMD_BALANCE = "balance"
 CMD_MONTH_SUMMARY = "month_summary"
 CMD_SUMMARY = "summary"
@@ -22,6 +23,7 @@ COMMAND_DESCRIPTIONS = {
     CMD_ADD_LESSON: "add lesson",
     CMD_LESSONS: "show lessons of student",
     CMD_ADD_PAYMENT: "add payment",
+    CMD_STUDENT_SUMMARY: "show summary for one student",
     CMD_BALANCE: "show student balance",
     CMD_MONTH_SUMMARY: "show current month summary",
     CMD_SUMMARY: "show overall summary statistics",

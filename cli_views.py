@@ -112,3 +112,23 @@ def print_overall_summary(summary, balance_status_getter):
             print(f'- {currency}: {amount} ({status})')
     else:
         print("No balances to show.")
+
+def print_student_summary(summary):
+    print("Student Summary")
+    print()
+    print(f'Student: {summary["student_name"]}')
+    print(f'Price per lesson: {summary["price_per_lesson"]} {summary["currency"]}')
+    print(f'Notes: {summary["notes"]}')
+    print()
+    print(f'Total lessons: {summary["total_lessons"]}')
+    print(f'Total teaching time: {summary["total_minutes"]} minutes')
+    print(f'Average lesson duration: {summary["average_duration"]:.1f} minutes')
+    print(f'Total earned: {summary["total_earned"]} {summary["currency"]}')
+    print(f'Total paid: {summary["total_paid"]} {summary["currency"]}')
+    print(
+        f'Current balance: {summary["balance"]} '
+        f'{summary["currency"]} ({summary["status"]})'
+    )
+    print()
+    print(f'First lesson: {summary["first_lesson_date"]}')
+    print(f'Last lesson: {summary["last_lesson_date"]}')

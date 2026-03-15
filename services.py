@@ -214,3 +214,40 @@ class ReportService:
             "payments_total_by_currency": dict(payments_total_by_currency),
             "balance_total_by_currency": dict(balance_total_by_currency),
         }
+
+    def get_student_summary(self, student_id):
+        data = load_data()
+
+        student = next((s for s in data["students"] if s["id"] == student_id), None)
+        if not student:
+            raise StudentNotFound(f"Student with id {student_id} not found.")
+
+        lessons = [l for l in data["lessons"] if l["student_id"] == student_id]
+        payments = [p for p in data["payments"] if p["student_id"] == student_id]
+
+        total_earned = sum(l["price_snapshot"] for l in lessons)
+        total_paid = sum(p["amount"] for p in payments)
+        balance = total_earned - total_paid
+
+        total_minutes = sum(l["duration"] for l in lessons)
+        average_duration = total_minutes / len(lessons) if lessons else 0
+
+        lesson_dates = sorted(l["date"] for l in lessons)
+        first_lesson_date = lesson_dates[0] if lesson_dates else "—"
+        last_lesson_date = lesson_dates[-1] if lesson_dates else "—"
+
+        return {
+            "student_name": student["name"],
+            "price_per_lesson": student["price_per_lesson"],
+            "currency": student["currency"],
+            "notes": student.get("notes", ""),
+            "total_lessons": len(lessons),
+            "total_minutes": total_minutes,
+            "average_duration": average_duration,
+            "total_earned": total_earned,
+            "total_paid": total_paid,
+            "balance": balance,
+            "status": self.get_balance_status(balance),
+            "first_lesson_date": first_lesson_date,
+            "last_lesson_date": last_lesson_date,
+        }

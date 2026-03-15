@@ -10,6 +10,7 @@ from constants import (
     CMD_BALANCE,
     CMD_MONTH_SUMMARY,
     CMD_SUMMARY,
+    CMD_STUDENT_SUMMARY,
     EXIT_COMMANDS,
     PROMPT,
 )
@@ -21,6 +22,7 @@ from cli_views import (
     print_balance,
     print_month_summary,
     print_overall_summary,
+    print_student_summary,
 )
 
 
@@ -42,6 +44,7 @@ class TutorCLI:
             CMD_BALANCE: self.handle_balance,
             CMD_MONTH_SUMMARY: self.handle_month_summary,
             CMD_SUMMARY: self.handle_summary,
+            CMD_STUDENT_SUMMARY: self.handle_student_summary,
         }
 
     def run(self):
@@ -118,3 +121,8 @@ class TutorCLI:
     def handle_summary(self):
         summary = self.reports.get_overall_summary()
         print_overall_summary(summary, self.reports.get_balance_status)
+
+    def handle_student_summary(self):
+        sid = int(input("Student id: "))
+        summary = self.reports.get_student_summary(sid)
+        print_student_summary(summary)
