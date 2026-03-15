@@ -1,5 +1,27 @@
 from services import StudentService, LessonService, PaymentService, ReportService
 from exceptions import StudentNotFound
+from constants import (
+    CMD_HELP,
+    CMD_STUDENTS,
+    CMD_ADD_STUDENT,
+    CMD_ADD_LESSON,
+    CMD_LESSONS,
+    CMD_ADD_PAYMENT,
+    CMD_BALANCE,
+    CMD_MONTH_SUMMARY,
+    CMD_SUMMARY,
+    EXIT_COMMANDS,
+    PROMPT,
+)
+from cli_views import (
+    print_welcome,
+    print_help,
+    print_students,
+    print_lessons,
+    print_balance,
+    print_month_summary,
+    print_overall_summary,
+)
 
 
 class TutorCLI:
@@ -10,160 +32,34 @@ class TutorCLI:
         self.payments = PaymentService()
         self.reports = ReportService()
 
-    def help(self):
-        print()
-        print("Tutor Tracker — Math Lessons")
-        print("Author: Dmytrii Korolyov")
-        print()
-        print("Available commands:")
-        print("students        show all students")
-        print("add_student     add a new student")
-        print("add_lesson      add lesson")
-        print("lessons         show lessons of student")
-        print("add_payment     add payment")
-        print("balance         show student balance")
-        print("month_summary   show current month summary")
-        print("summary         show overall summary statistics")
-        print("help            show this message")
-        print("exit            exit program")
-        print("quit            exit program")
-        print()
+        self.commands = {
+            CMD_HELP: self.handle_help,
+            CMD_STUDENTS: self.handle_students,
+            CMD_ADD_STUDENT: self.handle_add_student,
+            CMD_ADD_LESSON: self.handle_add_lesson,
+            CMD_LESSONS: self.handle_lessons,
+            CMD_ADD_PAYMENT: self.handle_add_payment,
+            CMD_BALANCE: self.handle_balance,
+            CMD_MONTH_SUMMARY: self.handle_month_summary,
+            CMD_SUMMARY: self.handle_summary,
+        }
 
     def run(self):
-        print("Tutor Tracker — Math Lessons")
-        print('Type "help" to see commands.')
+        print_welcome()
 
         while True:
-            cmd = input("> ").strip()
+            cmd = input(PROMPT).strip()
+
+            if cmd in EXIT_COMMANDS:
+                break
 
             try:
-                if cmd == "help":
-                    self.help()
-
-                elif cmd == "students":
-                    for s in self.students.list_students():
-                        print(
-                            f'{s["id"]}: {s["name"]} '
-                            f'({s["price_per_lesson"]} {s["currency"]})'
-                        )
-
-                elif cmd == "add_student":
-                    name = input("Name: ")
-                    price = input("Price per lesson: ")
-                    currency = input("Currency (e.g. UAH, CZK, EUR, USD): ").strip().upper()
-                    notes = input("Notes: ")
-
-                    self.students.add_student(name, price, currency, notes)
-                    print("Student added")
-
-                elif cmd == "add_lesson":
-                    sid = int(input("Student id: "))
-                    lesson_date = input("Date (YYYY-MM-DD, leave empty for today): ").strip()
-                    duration = int(input("Duration (minutes): "))
-                    comment = input("Comment: ")
-
-                    self.lessons.add_lesson(sid, duration, comment, lesson_date)
-                    print("Lesson added")
-
-                elif cmd == "lessons":
-                    sid = int(input("Student id: "))
-                    lessons = self.lessons.get_lessons(sid)
-
-                    for l in lessons:
-                        print(
-                            f'Lesson #{l["id"]}: {l["date"]}, {l["duration"]} min, '
-                            f'{l["price_snapshot"]} {l["currency_snapshot"]}, '
-                            f'comment="{l["comment"]}"'
-                        )
-
-                elif cmd == "add_payment":
-                    sid = int(input("Student id: "))
-                    amount = float(input("Amount: "))
-                    comment = input("Comment: ")
-
-                    self.payments.add_payment(sid, amount, comment)
-                    print("Payment added")
-
-
-                elif cmd == "balance":
-                    sid = int(input("Student id: "))
-                    report = self.reports.get_balance(sid)
-
-                    print(f'Student: {report["student_name"]}')
-                    print(f'Lessons total: {report["lessons_sum"]} {report["currency"]}')
-                    print(f'Payments total: {report["payments_sum"]} {report["currency"]}')
-                    print(f'Balance: {report["balance"]} {report["currency"]} ({report["status"]})')
-
-
-                elif cmd == "month_summary":
-                    summary = self.reports.get_current_month_summary()
-
-                    print(f'Current Month Summary — {summary["month"]}')
-                    print()
-                    print(f'Total lessons: {summary["total_lessons"]}')
-                    print()
-
-                    print("Earned from lessons:")
-                    if summary["earned_by_currency"]:
-                        for currency, amount in summary["earned_by_currency"].items():
-                            print(f'- {currency}: {amount}')
-                    else:
-                        print("No lessons this month.")
-
-                    print()
-                    print("Payments received:")
-                    if summary["received_by_currency"]:
-                        for currency, amount in summary["received_by_currency"].items():
-                            print(f'- {currency}: {amount}')
-                    else:
-                        print("No payments this month.")
-
-                    print()
-                    print("Per-student breakdown:")
-                    if summary["student_breakdown"]:
-                        for student_name, info in summary["student_breakdown"].items():
-                            print(
-                                f'- {student_name}: '
-                                f'{info["lessons"]} lessons, '
-                                f'{info["amount"]} {info["currency"]} earned'
-                            )
-                    else:
-                        print("No student activity this month.")
-
-
-                elif cmd == "summary":
-                    summary = self.reports.get_overall_summary()
-
-                    print("Overall Summary")
-                    print()
-                    print(f'Total students: {summary["total_students"]}')
-                    print(f'Total lessons: {summary["total_lessons"]}')
-                    print()
-
-                    print("Lessons total:")
-                    for currency, amount in summary["lessons_total_by_currency"].items():
-                        print(f'- {currency}: {amount}')
-
-                    print()
-                    print("Payments total:")
-                    for currency, amount in summary["payments_total_by_currency"].items():
-                        print(f'- {currency}: {amount}')
-
-                    print()
-                    print("Current balances:")
-                    for currency, amount in summary["balance_total_by_currency"].items():
-                        status = self.reports.get_balance_status(amount)
-                        print(f'- {currency}: {amount} ({status})')
-
-
-                elif cmd == "exit":
-                    break
-
-                elif cmd == "quit":
-                    break
-
-                else:
+                handler = self.commands.get(cmd)
+                if handler is None:
                     print("Unknown command. Type help.")
+                    continue
+
+                handler()
 
             except StudentNotFound as e:
                 print(e)
@@ -171,3 +67,54 @@ class TutorCLI:
                 print("Invalid numeric input.")
             except Exception as e:
                 print(f"Unexpected error: {e}")
+
+    def handle_help(self):
+        print_help()
+
+    def handle_students(self):
+        students = self.students.list_students()
+        print_students(students)
+
+    def handle_add_student(self):
+        name = input("Name: ")
+        price = input("Price per lesson: ")
+        currency = input("Currency (e.g. UAH, CZK, EUR, USD): ").strip().upper()
+        notes = input("Notes: ")
+
+        self.students.add_student(name, price, currency, notes)
+        print("Student added")
+
+    def handle_add_lesson(self):
+        sid = int(input("Student id: "))
+        lesson_date = input("Date (YYYY-MM-DD, leave empty for today): ").strip()
+        duration = int(input("Duration (minutes): "))
+        comment = input("Comment: ")
+
+        self.lessons.add_lesson(sid, duration, comment, lesson_date)
+        print("Lesson added")
+
+    def handle_lessons(self):
+        sid = int(input("Student id: "))
+        lessons = self.lessons.get_lessons(sid)
+        print_lessons(lessons)
+
+    def handle_add_payment(self):
+        sid = int(input("Student id: "))
+        amount = float(input("Amount: "))
+        comment = input("Comment: ")
+
+        self.payments.add_payment(sid, amount, comment)
+        print("Payment added")
+
+    def handle_balance(self):
+        sid = int(input("Student id: "))
+        report = self.reports.get_balance(sid)
+        print_balance(report)
+
+    def handle_month_summary(self):
+        summary = self.reports.get_current_month_summary()
+        print_month_summary(summary)
+
+    def handle_summary(self):
+        summary = self.reports.get_overall_summary()
+        print_overall_summary(summary, self.reports.get_balance_status)
