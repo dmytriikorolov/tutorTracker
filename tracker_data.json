@@ -1,0 +1,202 @@
+{
+    "students": [
+        {
+            "id": 1,
+            "name": "Danya",
+            "price_per_lesson": 500.0,
+            "currency": "UAH",
+            "notes": ""
+        },
+        {
+            "id": 2,
+            "name": "Matvey ",
+            "price_per_lesson": 1000.0,
+            "currency": "UAH",
+            "notes": ""
+        },
+        {
+            "id": 3,
+            "name": "Nikita (F)",
+            "price_per_lesson": 15.0,
+            "currency": "EUR",
+            "notes": ""
+        }
+    ],
+    "lessons": [
+        {
+            "id": 1,
+            "student_id": 1,
+            "date": "2026-02-28",
+            "duration": 60,
+            "comment": "IYMC",
+            "price_snapshot": 500.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 2,
+            "student_id": 1,
+            "date": "2026-03-07",
+            "duration": 60,
+            "comment": "IYMC 2",
+            "price_snapshot": 500.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 3,
+            "student_id": 2,
+            "date": "2026-03-15",
+            "duration": 60,
+            "comment": "Quadratic ineq",
+            "price_snapshot": 1000.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 4,
+            "student_id": 1,
+            "date": "2026-03-15",
+            "duration": 80,
+            "comment": "IYMC ",
+            "price_snapshot": 500.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 5,
+            "student_id": 2,
+            "date": "2026-03-08",
+            "duration": 60,
+            "comment": "",
+            "price_snapshot": 1000.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 6,
+            "student_id": 1,
+            "date": "2026-03-25",
+            "duration": 60,
+            "comment": "iymc 2023 ",
+            "price_snapshot": 500.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 7,
+            "student_id": 2,
+            "date": "2026-03-26",
+            "duration": 60,
+            "comment": "quadratic ineq + interval method ",
+            "price_snapshot": 1000.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 8,
+            "student_id": 2,
+            "date": "2026-03-29",
+            "duration": 85,
+            "comment": "",
+            "price_snapshot": 1000.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 9,
+            "student_id": 1,
+            "date": "2026-04-04",
+            "duration": 60,
+            "comment": "",
+            "price_snapshot": 500.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 10,
+            "student_id": 2,
+            "date": "2026-04-15",
+            "duration": 60,
+            "comment": "",
+            "price_snapshot": 1000.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 11,
+            "student_id": 2,
+            "date": "2026-04-19",
+            "duration": 60,
+            "comment": "",
+            "price_snapshot": 1000.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 12,
+            "student_id": 1,
+            "date": "2026-04-19",
+            "duration": 60,
+            "comment": "",
+            "price_snapshot": 500.0,
+            "currency_snapshot": "UAH"
+        },
+        {
+            "id": 13,
+            "student_id": 2,
+            "date": "2026-04-19",
+            "duration": 69,
+            "comment": "",
+            "price_snapshot": 1000.0,
+            "currency_snapshot": "UAH"
+        }
+    ],
+    "payments": [
+        {
+            "id": 1,
+            "student_id": 2,
+            "date": "2026-03-15",
+            "amount": 1000.0,
+            "currency": "UAH",
+            "comment": ""
+        },
+        {
+            "id": 2,
+            "student_id": 2,
+            "date": "2026-03-16",
+            "amount": 1000.0,
+            "currency": "UAH",
+            "comment": ""
+        },
+        {
+            "id": 3,
+            "student_id": 2,
+            "date": "2026-03-26",
+            "amount": 1000.0,
+            "currency": "UAH",
+            "comment": ""
+        },
+        {
+            "id": 4,
+            "student_id": 2,
+            "date": "2026-03-29",
+            "amount": 1000.0,
+            "currency": "UAH",
+            "comment": ""
+        },
+        {
+            "id": 5,
+            "student_id": 2,
+            "date": "2026-04-19",
+            "amount": 1000.0,
+            "currency": "UAH",
+            "comment": ""
+        },
+        {
+            "id": 6,
+            "student_id": 2,
+            "date": "2026-04-19",
+            "amount": 1000.0,
+            "currency": "UAH",
+            "comment": ""
+        },
+        {
+            "id": 7,
+            "student_id": 2,
+            "date": "2026-04-19",
+            "amount": 1000.0,
+            "currency": "UAH",
+            "comment": ""
+        }
+    ]
+}

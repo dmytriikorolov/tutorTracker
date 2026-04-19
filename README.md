@@ -16,6 +16,8 @@ The app stores data in `tracker_data.json` in the project directory.
 - Add students with lesson price, currency, and notes
 - Find students by name with `find_student`
 - Use student name or student ID in the main student-specific flows
+- Use built-in short command aliases
+- Load custom aliases from `.tutor_tracker_aliases`
 - Add lessons with optional custom date
 - List, edit, and delete lessons
 - Add payments with optional custom date
@@ -26,6 +28,7 @@ The app stores data in `tracker_data.json` in the project directory.
 - Show overall summary
 - Use `Decimal`-based money calculations for correct financial totals
 - Safely read older JSON data that still contains numeric money values
+- Tab completion and command history when `readline` is available
 
 ## Commands
 
@@ -76,6 +79,39 @@ Duration (minutes): 60
 Comment: geometry
 Lesson added
 ```
+
+## Command Aliases
+
+Built-in short aliases include:
+
+- `ss` -> `student_summary`
+- `ms` -> `month_summary`
+- `sum` -> `summary`
+- `al` -> `add_lesson`
+- `ap` -> `add_payment`
+- `p` -> `payments`
+- `b` -> `balance`
+- `q` -> `quit`
+
+You can add your own aliases in `.tutor_tracker_aliases`.
+
+Supported formats:
+
+```text
+alias ss student_summary
+ls lessons
+pay=add_payment
+```
+
+Aliases can point to other aliases, but alias loops are rejected.
+
+## History And Completion
+
+If Python `readline` support is available in your environment:
+
+- `Tab` completes commands and aliases
+- command history is saved in `.tutor_tracker_history`
+- up/down arrows navigate previous commands
 
 ## Editing Records
 
