@@ -377,6 +377,7 @@ class ReportService:
         return overview
 
     def get_current_month_summary(self):
+        # OS
         data = load_data()
         current_month = date.today().strftime("%Y-%m")
 
