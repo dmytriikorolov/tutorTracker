@@ -1,4 +1,13 @@
+from pathlib import Path
+
+try:
+    import readline
+except ImportError:  # pragma: no cover - platform-specific fallback
+    readline = None
+
 from constants import (
+    ALIASES_FILE,
+    BUILT_IN_ALIASES,
     CMD_ADD_LESSON,
     CMD_ADD_PAYMENT,
     CMD_ADD_STUDENT,
@@ -16,6 +25,7 @@ from constants import (
     CMD_STUDENT_SUMMARY,
     CMD_SUMMARY,
     EXIT_COMMANDS,
+    HISTORY_FILE,
     PROMPT,
 )
 from cli_views import (
@@ -65,12 +75,16 @@ class TutorCLI:
             CMD_SUMMARY: self.handle_summary,
             CMD_STUDENT_SUMMARY: self.handle_student_summary,
         }
+        self.aliases = self.load_aliases()
+        self.history_path = Path(HISTORY_FILE)
+        self.configure_readline()
 
     def run(self):
         print_welcome()
 
         while True:
-            cmd = input(PROMPT).strip()
+            raw_cmd = input(PROMPT).strip()
+            cmd = self.resolve_command(raw_cmd)
 
             if cmd in EXIT_COMMANDS:
                 break
@@ -95,6 +109,98 @@ class TutorCLI:
                 print(exc)
             except Exception as exc:
                 print(f"Unexpected error: {exc}")
+
+        self.save_history()
+
+    def load_aliases(self):
+        aliases = dict(BUILT_IN_ALIASES)
+        alias_path = Path(ALIASES_FILE)
+        if not alias_path.exists():
+            return aliases
+
+        with open(alias_path, "r", encoding="utf-8") as handle:
+            for line_number, raw_line in enumerate(handle, start=1):
+                line = raw_line.strip()
+                if not line or line.startswith("#"):
+                    continue
+
+                alias_name, target = self.parse_alias_line(line, line_number)
+                aliases[alias_name] = target
+
+        return aliases
+
+    @staticmethod
+    def parse_alias_line(line, line_number):
+        if "=" in line:
+            alias_name, target = (part.strip() for part in line.split("=", 1))
+        else:
+            parts = line.split()
+            if len(parts) == 3 and parts[0] == "alias":
+                _, alias_name, target = parts
+            elif len(parts) == 2:
+                alias_name, target = parts
+            else:
+                raise InvalidInput(
+                    f"Invalid alias config on line {line_number}. "
+                    "Use 'alias short full_command', 'short full_command', or 'short=full_command'."
+                )
+
+        if not alias_name or not target:
+            raise InvalidInput(f"Invalid alias config on line {line_number}.")
+        if alias_name == "alias":
+            raise InvalidInput(
+                f"Invalid alias config on line {line_number}. "
+                "The 'alias' keyword must be followed by both alias name and target."
+            )
+
+        return alias_name, target
+
+    def resolve_command(self, raw_cmd):
+        if not raw_cmd:
+            return raw_cmd
+
+        visited = set()
+        resolved = raw_cmd
+
+        while resolved in self.aliases:
+            if resolved in visited:
+                raise InvalidInput(f"Alias loop detected for '{raw_cmd}'.")
+            visited.add(resolved)
+            resolved = self.aliases[resolved]
+
+        return resolved
+
+    def completer(self, text, state):
+        options = sorted({
+            *self.commands.keys(),
+            *EXIT_COMMANDS,
+            *self.aliases.keys(),
+        })
+        matches = [option for option in options if option.startswith(text)]
+        if state < len(matches):
+            return matches[state]
+        return None
+
+    def configure_readline(self):
+        if readline is None:
+            return
+
+        readline.set_completer(self.completer)
+        readline.parse_and_bind("tab: complete")
+        readline.set_history_length(1000)
+        try:
+            readline.read_history_file(self.history_path)
+        except FileNotFoundError:
+            pass
+
+    def save_history(self):
+        if readline is None:
+            return
+
+        try:
+            readline.write_history_file(self.history_path)
+        except OSError:
+            pass
 
     def prompt_student(self):
         reference = input("Student id or name: ").strip()

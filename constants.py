@@ -1,6 +1,8 @@
 APP_TITLE = "Tutor Tracker — Math Lessons"
 APP_AUTHOR = "Dmytrii Korolov"
 PROMPT = "> "
+ALIASES_FILE = ".tutor_tracker_aliases"
+HISTORY_FILE = ".tutor_tracker_history"
 
 CMD_HELP = "help"
 CMD_STUDENTS = "students"
@@ -42,4 +44,25 @@ COMMAND_DESCRIPTIONS = {
     CMD_HELP: "show this message",
     CMD_EXIT: "exit program",
     CMD_QUIT: "exit program",
+}
+
+BUILT_IN_ALIASES = {
+    "h": CMD_HELP,
+    "s": CMD_STUDENTS,
+    "fs": CMD_FIND_STUDENT,
+    "as": CMD_ADD_STUDENT,
+    "al": CMD_ADD_LESSON,
+    "l": CMD_LESSONS,
+    "el": CMD_EDIT_LESSON,
+    "dl": CMD_DELETE_LESSON,
+    "ap": CMD_ADD_PAYMENT,
+    "p": CMD_PAYMENTS,
+    "ep": CMD_EDIT_PAYMENT,
+    "dp": CMD_DELETE_PAYMENT,
+    "b": CMD_BALANCE,
+    "ms": CMD_MONTH_SUMMARY,
+    "sum": CMD_SUMMARY,
+    "ss": CMD_STUDENT_SUMMARY,
+    "q": CMD_QUIT,
+    "x": CMD_EXIT,
 }
