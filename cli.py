@@ -186,7 +186,11 @@ class TutorCLI:
             return
 
         readline.set_completer(self.completer)
-        readline.parse_and_bind("tab: complete")
+        doc = (getattr(readline, "__doc__", "") or "").lower()
+        if "libedit" in doc:
+            readline.parse_and_bind("bind ^I rl_complete")
+        else:
+            readline.parse_and_bind("tab: complete")
         readline.set_history_length(1000)
         try:
             readline.read_history_file(self.history_path)
