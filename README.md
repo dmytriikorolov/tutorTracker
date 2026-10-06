@@ -1,141 +1,145 @@
-Tutor Tracker — Math Lessons
-Author: Dmytrii Korolyov
+# Tutor Tracker
 
-Terminal application to track tutoring students, lessons, payments, and balances.
+A lightweight terminal application for managing private tutoring sessions, payments, student balances, and lesson history.
 
-## Run
+The project started as a small personal tool and evolved into a more structured Python application with separated storage, services, CLI logic, validation, and tests.
+
+## Features
+
+- Manage students, lessons, and payments
+- Track outstanding balances per student
+- Monthly and overall summaries
+- Search students by name or ID
+- Edit and delete lessons and payments
+- Command aliases and tab completion
+- Persistent local JSON storage
+- Atomic writes to reduce the risk of data corruption
+- `Decimal`-based money calculations
+- Backward compatibility with older stored numeric values
+- Automated tests for core service logic
+
+## Project Structure
+
+```text
+.
+├── app.py
+├── cli.py
+├── cli_views.py
+├── constants.py
+├── exceptions.py
+├── models.py
+├── services.py
+├── storage.py
+└── tests/
+```
+
+The application is split into several layers:
+
+- `cli.py` handles user interaction
+- `services.py` contains business logic
+- `storage.py` handles persistence
+- `models.py` defines application data structures
+- `tests/` contains automated tests
+
+## Running the Application
+
+Requires Python 3.
 
 ```bash
+git clone https://github.com/dmytriikorolov/tutorTracker.git
+cd tutorTracker
 python app.py
 ```
 
-The app stores data in `tracker_data.json` in the project directory.
-
-## Current Features
-
-- Add students with lesson price, currency, and notes
-- Find students by name with `find_student`
-- Use student name or student ID in the main student-specific flows
-- Use built-in short command aliases
-- Load custom aliases from `.tutor_tracker_aliases`
-- Add lessons with optional custom date
-- List, edit, and delete lessons
-- Add payments with optional custom date
-- List, edit, and delete payments
-- Show student balances
-- Show per-student summary
-- Show current month summary
-- Show overall summary
-- Use `Decimal`-based money calculations for correct financial totals
-- Safely read older JSON data that still contains numeric money values
-- Tab completion and command history when `readline` is available
-
-## Commands
-
-- `help` : show all commands
-- `students` : show all students with price, lesson count, last lesson date, and balance
-- `find_student` : search students by partial name
-- `add_student` : add a new student
-- `add_lesson` : add a lesson for a student
-- `lessons` : list lessons for a student
-- `edit_lesson` : edit a lesson by lesson ID
-- `delete_lesson` : delete a lesson by lesson ID
-- `add_payment` : add a payment for a student
-- `payments` : list payments for a student
-- `edit_payment` : edit a payment by payment ID
-- `delete_payment` : delete a payment by payment ID
-- `balance` : show balance for one student
-- `student_summary` : show detailed summary for one student
-- `month_summary` : show current month activity
-- `summary` : show overall totals
-- `exit` or `quit` : leave the program
-
-## Student Lookup
-
-For these commands, you can type either the student ID or the student name:
-
-- `add_lesson`
-- `lessons`
-- `add_payment`
-- `payments`
-- `balance`
-- `student_summary`
-
-Lookup behavior:
-
-- Exact name match is preferred
-- Partial name match works if it identifies one student uniquely
-- If multiple students match, the app asks you to use the ID
-- If no exact or partial match is found, the app may suggest close names
-
-Example:
+On first launch, the application automatically creates a local:
 
 ```text
+tracker_data.json
+```
+
+This file contains the user's private tutoring data and is intentionally excluded from Git.
+
+## Example
+
+```text
+Tutor Tracker — Math Lessons
+Type "help" to see commands.
+
+> add_student
+Student name: Alice
+Price per lesson: 25
+Currency: EUR
+Notes:
+Student added
+
 > add_lesson
 Student id or name: Alice
 Matched student: 1 - Alice
-Date (YYYY-MM-DD, leave empty for today): 2026-04-10
+Date (YYYY-MM-DD, leave empty for today):
 Duration (minutes): 60
-Comment: geometry
+Comment: algebra
 Lesson added
+
+> balance
+Student id or name: Alice
+Matched student: 1 - Alice
+Alice: 25.00 EUR owed to you
 ```
 
-## Command Aliases
+## Commands
 
-Built-in short aliases include:
-
-- `ss` -> `student_summary`
-- `ms` -> `month_summary`
-- `sum` -> `summary`
-- `al` -> `add_lesson`
-- `ap` -> `add_payment`
-- `p` -> `payments`
-- `b` -> `balance`
-- `q` -> `quit`
-
-You can add your own aliases in `.tutor_tracker_aliases`.
-
-Supported formats:
+Useful commands include:
 
 ```text
-alias ss student_summary
-ls lessons
-pay=add_payment
+students
+find_student
+add_student
+
+add_lesson
+lessons
+edit_lesson
+delete_lesson
+
+add_payment
+payments
+edit_payment
+delete_payment
+
+balance
+student_summary
+month_summary
+summary
 ```
 
-Aliases can point to other aliases, but alias loops are rejected.
+Run:
 
-## History And Completion
+```text
+help
+```
 
-If Python `readline` support is available in your environment:
-
-- `Tab` completes commands and aliases
-- command history is saved in `.tutor_tracker_history`
-- up/down arrows navigate previous commands
-
-## Editing Records
-
-When editing lessons or payments:
-
-- Press `Enter` on a field to keep the current value
-- Type `-` for the comment field to clear the comment
-
-Delete commands require typing `DELETE` as confirmation.
+inside the application to see the complete command list.
 
 ## Money Handling
 
-- New and updated money values are saved as strings like `"25.00"`
-- Calculations use `Decimal`, not `float`
-- Existing JSON files with older numeric values such as `25.0` are still supported
+All new monetary values are stored and calculated using Python's `Decimal` type instead of floating-point arithmetic.
+
+This avoids common precision problems when working with money.
+
+Older data containing numeric JSON values such as:
+
+```json
+500.0
+```
+
+is still supported.
 
 ## Data Safety
 
-Saves are atomic:
+User data is stored locally in `tracker_data.json`.
 
-- Data is written to a temporary file first
-- The temporary file is then moved into place
+The file is excluded from the repository through `.gitignore`.
 
-This reduces the risk of corrupting `tracker_data.json` if the app stops during a save.
+Writes are atomic: the application first writes data to a temporary file and then replaces the existing database file. This reduces the risk of leaving corrupted JSON if the process is interrupted during a save.
 
 ## Tests
 
@@ -145,8 +149,14 @@ Run the test suite with:
 python -m unittest discover -s tests -v
 ```
 
-Or with pytest:
+or:
 
 ```bash
-pytest -q tests/test_services.py -p no:cacheprovider
+pytest -q
 ```
+
+## Motivation
+
+I originally built Tutor Tracker to replace manual notes for tutoring sessions and payments with a small tool tailored to my own workflow.
+
+The project also became an exercise in improving a simple script into a more maintainable application with clearer separation of concerns, validation, persistence, and testing.
