@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 .DS_Store
 .tutor_tracker_history
+tracker_data.json
